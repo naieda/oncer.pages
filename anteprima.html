@@ -57,9 +57,26 @@
     width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:2.6rem;
     background:linear-gradient(135deg,#FF2D6B22,#7B2FFF22);
   }
+  .page-photo{cursor:pointer;}
   .page-meta{padding:9px 11px;}
-  .page-day{font-size:9px;color:var(--grad-start);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
   .page-caption{font-size:12px;color:var(--ink);line-height:1.4;}
+  .page-by{font-size:10px;color:var(--muted);margin-top:4px;}
+  .book-date{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.3px;margin-bottom:14px;margin-top:-4px;}
+  .lightbox{
+    display:none;position:fixed;inset:0;background:rgba(20,10,25,.92);z-index:100;
+    align-items:center;justify-content:center;padding:24px;
+  }
+  .lightbox.active{display:flex;}
+  .lightbox img{
+    max-width:100%;max-height:80vh;border-radius:10px;
+    -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;pointer-events:none;
+  }
+  .lightbox-close{
+    position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:50%;
+    background:rgba(255,255,255,.15);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:20px;cursor:pointer;
+  }
+  .print-price{font-size:12px;color:var(--grad-start);font-weight:700;margin-top:6px;}
   label{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;margin-top:14px;}
   input[type=email]{
     width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);
@@ -130,23 +147,18 @@
   <div class="step" id="step-ready">
     <div class="card">
       <h2 id="book-title">Il libro</h2>
+      <div class="book-date" id="book-date"></div>
       <div class="grid" id="pages-grid"></div>
     </div>
 
     <div class="card">
-      <div class="toggle-row" id="print-toggle-row">
-        <div class="toggle-switch" id="print-toggle"><div class="toggle-knob"></div></div>
-        <div style="flex:1;">
-          <div style="font-weight:700;font-size:13.5px;">Vorrei anche una copia stampata</div>
-          <div class="muted" style="font-size:11.5px;">Lasciaci la tua email, ti contattiamo noi per i dettagli.</div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="font-size:22px;flex-shrink:0;">🖨</div>
+        <div>
+          <div style="font-weight:700;font-size:13.5px;margin-bottom:3px;">Copia stampata — presto disponibile</div>
+          <div class="muted" style="font-size:11.5px;">Stiamo preparando la stampa anche per i libri degli eventi. Appena sarà tutto pronto (prezzi e pagamenti inclusi), potrai richiedere una copia stampata direttamente da qui.</div>
         </div>
       </div>
-      <div id="print-email-wrap" style="display:none;">
-        <label for="print-email">La tua email</label>
-        <input type="email" id="print-email" placeholder="nome@esempio.com">
-        <button class="btn" id="btn-print-request">Richiedi la copia stampata</button>
-      </div>
-      <p id="print-confirmed" class="muted" style="display:none;margin-top:14px;">✅ Richiesta inviata — ti scriveremo noi per i dettagli.</p>
     </div>
 
     <div class="upsell">
@@ -158,6 +170,11 @@
   </div>
 
 </main>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-close" id="lightbox-close">✕</div>
+  <img id="lightbox-img" src="" alt="" oncontextmenu="return false" draggable="false">
+</div>
 
 <footer>Oncer — questa pagina funziona senza scaricare l'app.</footer>
 
@@ -202,6 +219,13 @@ async function init(){
     document.getElementById("hero-sub").textContent = data.book.title;
     document.getElementById("book-title").textContent = data.book.title;
 
+    const dateEl = document.getElementById("book-date");
+    if(data.book.eventDate){
+      dateEl.textContent = new Date(data.book.eventDate).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+    } else {
+      dateEl.textContent = "";
+    }
+
     const grid = document.getElementById("pages-grid");
     grid.innerHTML = "";
     (data.pages || []).forEach(p => {
@@ -210,12 +234,19 @@ async function init(){
       const isPhoto = p.photo && (p.photo.startsWith("http") || p.photo.startsWith("data:"));
       card.innerHTML =
         (isPhoto
-          ? '<img class="page-photo" src="' + escapeHtml(p.photo) + '" loading="lazy">'
+          ? '<img class="page-photo" src="' + escapeHtml(p.photo) + '" loading="lazy" oncontextmenu="return false" draggable="false">'
           : '<div class="page-emoji">' + escapeHtml(p.photo || "📷") + '</div>') +
         '<div class="page-meta">' +
-          '<div class="page-day">Giorno ' + p.day + '</div>' +
           (p.caption ? '<div class="page-caption">' + escapeHtml(p.caption) + '</div>' : '') +
+          (p.by ? '<div class="page-by">📸 @' + escapeHtml(p.by) + '</div>' : '') +
         '</div>';
+      if(isPhoto){
+        const img = card.querySelector(".page-photo");
+        img.addEventListener("click", () => {
+          document.getElementById("lightbox-img").src = p.photo;
+          document.getElementById("lightbox").classList.add("active");
+        });
+      }
       grid.appendChild(card);
     });
 
@@ -227,39 +258,17 @@ async function init(){
 }
 init();
 
-document.getElementById("print-toggle-row").onclick = () => {
-  const toggle = document.getElementById("print-toggle");
-  const wrap = document.getElementById("print-email-wrap");
-  const on = toggle.classList.toggle("on");
-  wrap.style.display = on ? "block" : "none";
+// Il lightbox apre la foto più grande, ma niente salvataggio: niente link
+// diretto all'immagine, tasto destro disattivato, drag disattivato. Non è
+// una protezione perfetta (uno screenshot resta sempre possibile), ma
+// scoraggia il salvataggio occasionale con un tasto o un menu.
+document.getElementById("lightbox-close").onclick = () => {
+  document.getElementById("lightbox").classList.remove("active");
+};
+document.getElementById("lightbox").onclick = (e) => {
+  if(e.target.id === "lightbox") document.getElementById("lightbox").classList.remove("active");
 };
 
-document.getElementById("btn-print-request").onclick = async () => {
-  const email = document.getElementById("print-email").value.trim();
-  if(!email) return;
-  const btn = document.getElementById("btn-print-request");
-  btn.disabled = true;
-  btn.textContent = "Invio…";
-  try{
-    const res = await fetch(SUPABASE_URL + "/functions/v1/request-print", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": "Bearer " + SUPABASE_ANON_KEY,
-      },
-      body: JSON.stringify({ inviteCode, email }),
-    });
-    if(!res.ok) throw new Error("richiesta fallita");
-    document.getElementById("print-email-wrap").style.display = "none";
-    document.getElementById("print-toggle-row").style.display = "none";
-    document.getElementById("print-confirmed").style.display = "block";
-  }catch(err){
-    btn.disabled = false;
-    btn.textContent = "Richiedi la copia stampata";
-    alert("Non siamo riusciti a inviare la richiesta. Riprova.");
-  }
-};
 </script>
 </body>
 </html>
