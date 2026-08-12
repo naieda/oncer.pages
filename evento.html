@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Aggiungi la tua foto — Oncer</title>
+<style>
+  :root{
+    --grad-start:#FF2D6B;
+    --grad-end:#7B2FFF;
+    --cream:#FBF3E7;
+    --ink:#1a1420;
+    --muted:#6b6470;
+    --line:#ece3d6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.55;
+    min-height:100vh;
+  }
+  .hero{
+    background:linear-gradient(135deg,var(--grad-start),var(--grad-end));
+    padding:44px 24px 60px;
+    text-align:center;
+    color:var(--cream);
+  }
+  .mark{width:56px;height:auto;margin:0 auto 14px;display:block;}
+  .hero h1{font-size:1.5rem;font-weight:800;margin-bottom:6px;}
+  .hero p{opacity:.92;font-size:.95rem;max-width:400px;margin:0 auto;}
+  main{max-width:480px;margin:-32px auto 0;padding:0 18px 60px;}
+  .card{
+    background:#fff;border-radius:20px;padding:28px 24px;
+    box-shadow:0 20px 50px rgba(0,0,0,.12);
+  }
+  .step{display:none;}
+  .step.active{display:block;}
+  h2{font-size:1.15rem;margin-bottom:10px;}
+  p{margin-bottom:14px;color:var(--ink);}
+  .muted{color:var(--muted);font-size:.9rem;}
+  label{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;margin-top:16px;}
+  input[type=text],input[type=email],input[type=tel]{
+    width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);
+    font-size:1rem;font-family:inherit;background:#faf8f4;
+  }
+  input:focus{outline:2px solid var(--grad-end);}
+  .btn{
+    display:block;width:100%;text-align:center;
+    background:linear-gradient(135deg,var(--grad-start),var(--grad-end));
+    color:#fff;border:none;font-weight:700;font-size:1rem;
+    padding:15px 20px;border-radius:999px;margin-top:20px;cursor:pointer;
+  }
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-ghost{
+    display:block;width:100%;text-align:center;background:transparent;
+    color:var(--muted);border:1px solid var(--line);font-weight:600;font-size:.95rem;
+    padding:13px 20px;border-radius:999px;margin-top:10px;cursor:pointer;
+  }
+  .photo-label{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+    border:2px dashed var(--line);border-radius:16px;padding:28px 16px;cursor:pointer;
+    text-align:center;color:var(--muted);font-size:.9rem;font-weight:600;
+  }
+  .photo-label svg{width:32px;height:32px;}
+  #photo-preview{width:100%;border-radius:14px;display:none;margin-top:12px;}
+  #photo-input{display:none;}
+  .otp-input{letter-spacing:.4em;text-align:center;font-size:1.3rem;font-weight:700;}
+  .center{text-align:center;}
+  .emoji-big{font-size:2.6rem;margin-bottom:10px;}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 20px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <svg class="mark" viewBox="0 0 100 154" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF2D6B"/>
+        <stop offset="100%" stop-color="#7B2FFF"/>
+      </linearGradient>
+    </defs>
+    <path d="M12 0h76a12 12 0 0 1 12 12v130L50 110 0 142V12A12 12 0 0 1 12 0z" fill="#FBF3E7"/>
+    <circle cx="50" cy="53" r="29" fill="url(#g)"/>
+    <circle cx="50" cy="53" r="15" fill="#FBF3E7"/>
+  </svg>
+  <h1 id="hero-title">Oncer</h1>
+  <p id="hero-sub">Aggiungi la tua foto al libro di oggi</p>
+</div>
+
+<main>
+  <div class="card">
+
+    <div class="step active" id="step-loading">
+      <p class="center muted">Un attimo, stiamo caricando il libro…</p>
+    </div>
+
+    <div class="step" id="step-error">
+      <div class="center">
+        <div class="emoji-big">🔖</div>
+        <h2>Link non valido</h2>
+        <p class="muted">Questo QR code o link non porta a nessun libro attivo. Chiedi a chi ha organizzato l'evento di controllare il codice.</p>
+      </div>
+    </div>
+
+    <div class="step" id="step-welcome">
+      <h2 id="welcome-title">Aggiungi la tua foto</h2>
+      <p class="muted">Hai già l'app Oncer sul telefono?</p>
+      <button class="btn" id="btn-has-app">Sì, ho già l'app</button>
+      <button class="btn-ghost" id="btn-no-app">No, è la prima volta</button>
+    </div>
+
+    <div class="step" id="step-has-app">
+      <div class="center">
+        <div class="emoji-big">📱</div>
+        <h2>Apri l'app Oncer</h2>
+        <p class="muted">Apri Oncer sul tuo telefono: troverai l'invito a questo libro tra le notifiche, oppure chiedi a chi ha organizzato l'evento di invitarti direttamente dall'app cercando il tuo username.</p>
+      </div>
+    </div>
+
+    <div class="step" id="step-capture">
+      <h2>Scatta la tua foto</h2>
+      <form id="form-capture">
+        <label class="photo-label" for="photo-input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h3l2-2h6l2 2h3v13H4V7z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span id="photo-label-text">Tocca per scattare o scegliere una foto</span>
+        </label>
+        <input type="file" id="photo-input" accept="image/*" capture="environment">
+        <img id="photo-preview">
+        <label for="input-caption">Un pensiero (facoltativo)</label>
+        <input type="text" id="input-caption" placeholder="Che bella giornata…" maxlength="140">
+        <label for="input-name">Il tuo nome</label>
+        <input type="text" id="input-name" placeholder="Come ti chiami" required>
+        <label for="input-email">La tua email</label>
+        <input type="email" id="input-email" placeholder="nome@esempio.com" required>
+        <p class="muted" style="margin-top:10px;font-size:.8rem;">Ti manderemo un codice per confermare — niente password, niente app da scaricare.</p>
+        <button class="btn" type="submit" id="btn-continue-capture" disabled>Continua</button>
+      </form>
+    </div>
+
+    <div class="step" id="step-otp">
+      <h2>Controlla la tua email</h2>
+      <p class="muted">Ti abbiamo mandato un codice a <strong id="otp-email-display"></strong>.</p>
+      <form id="form-otp">
+        <label for="input-otp">Codice</label>
+        <input type="text" inputmode="numeric" class="otp-input" id="input-otp" placeholder="000000" maxlength="6" required>
+        <button class="btn" type="submit" id="btn-verify-otp">Conferma e pubblica la foto</button>
+      </form>
+    </div>
+
+    <div class="step" id="step-done">
+      <div class="center">
+        <div class="emoji-big">🎉</div>
+        <h2>Fatto!</h2>
+        <p class="muted">La tua foto è nel libro, per sempre. Ti scriveremo quando sarà pronto da vedere tutto insieme.</p>
+      </div>
+      <button class="btn-ghost" id="btn-add-another">Aggiungi un'altra foto di oggi</button>
+    </div>
+
+  </div>
+</main>
+
+<footer>Oncer — questa pagina funziona senza scaricare l'app.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+// ── Configurazione ───────────────────────────────────────────────────────
+// Stessi valori usati in src/lib/supabase.js dentro l'app — da incollare
+// qui prima di pubblicare la pagina.
+const SUPABASE_URL = "https://infqeqlrjbsoenpbgkgk.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluZnFlcWxyamJzb2VucGJna2drIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3NDE0MDgsImV4cCI6MjEwMDMxNzQwOH0.RRmE8CPsFHhI4XN6jCt2l2HCWSI-Vrz2wauy5mFmV5s";
+const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const params = new URLSearchParams(location.search);
+const inviteCode = params.get("c");
+
+let bookInfo = null;
+let capturedFile = null;
+let pendingEmail = null;
+let guestName = null;
+
+function showStep(id){
+  document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+function setBusy(btnId, busy, busyText, idleText){
+  const btn = document.getElementById(btnId);
+  btn.disabled = busy;
+  btn.textContent = busy ? busyText : idleText;
+}
+function dayOfYear(d){
+  const start = new Date(d.getFullYear(), 0, 0);
+  return Math.floor((d - start) / 86400000);
+}
+
+async function init(){
+  if(!inviteCode){ showStep("step-error"); return; }
+  try{
+    const res = await fetch(SUPABASE_URL + "/functions/v1/get-event-book", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY },
+      body: JSON.stringify({ inviteCode }),
+    });
+    const data = await res.json();
+    if(!res.ok || !data.book){ showStep("step-error"); return; }
+    bookInfo = data.book;
+    document.getElementById("hero-sub").textContent = bookInfo.title;
+    document.getElementById("welcome-title").textContent = 'Aggiungi la tua foto a "' + bookInfo.title + '"';
+    showStep("step-welcome");
+  }catch(err){
+    console.error("Oncer evento: caricamento libro fallito —", err.message);
+    showStep("step-error");
+  }
+}
+init();
+
+document.getElementById("btn-has-app").onclick = () => showStep("step-has-app");
+document.getElementById("btn-no-app").onclick = () => showStep("step-capture");
+
+document.getElementById("photo-input").onchange = (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  capturedFile = file;
+  const url = URL.createObjectURL(file);
+  const img = document.getElementById("photo-preview");
+  img.src = url;
+  img.style.display = "block";
+  document.getElementById("photo-label-text").textContent = "Foto scelta — tocca per cambiarla";
+  document.getElementById("btn-continue-capture").disabled = false;
+};
+
+document.getElementById("form-capture").onsubmit = async (e) => {
+  e.preventDefault();
+  if(!capturedFile) return;
+  pendingEmail = document.getElementById("input-email").value.trim();
+  guestName = document.getElementById("input-name").value.trim();
+  if(!pendingEmail || !guestName) return;
+  setBusy("btn-continue-capture", true, "Invio codice…", "Continua");
+  const { error } = await supa.auth.signInWithOtp({ email: pendingEmail, options: { shouldCreateUser: true } });
+  setBusy("btn-continue-capture", false, "", "Continua");
+  if(error){
+    console.error("Oncer evento: invio codice fallito —", error.message);
+    alert("Non siamo riusciti a inviare il codice. Controlla l'email e riprova.");
+    return;
+  }
+  document.getElementById("otp-email-display").textContent = pendingEmail;
+  showStep("step-otp");
+};
+
+document.getElementById("form-otp").onsubmit = async (e) => {
+  e.preventDefault();
+  const token = document.getElementById("input-otp").value.trim();
+  setBusy("btn-verify-otp", true, "Verifica in corso…", "Conferma e pubblica la foto");
+  try{
+    const { data, error } = await supa.auth.verifyOtp({ email: pendingEmail, token, type: "email" });
+    if(error) throw error;
+    const userId = data.user.id;
+
+    // Importante: NON usare upsert con account_type="guest" incondizionato —
+    // se questa email appartiene già a un account Oncer vero (qualcuno che
+    // usa per sbaglio questa pagina con la propria email normale), un
+    // upsert lo declasserebbe a "ospite". Si crea "guest" SOLO se il
+    // profilo non esiste ancora davvero.
+    const { data: existingProfile } = await supa.from("profiles").select("id, username").eq("id", userId).maybeSingle();
+    if(!existingProfile){
+      await supa.from("profiles").insert({ id: userId, username: guestName, account_type: "guest" });
+    } else if(!existingProfile.username){
+      await supa.from("profiles").update({ username: guestName }).eq("id", userId);
+    }
+
+    await supa.from("shared_book_members").insert({
+      shared_book_id: bookInfo.id, user_id: userId, status: "accepted",
+    });
+
+    let photoUrl = null;
+    const path = userId + "/" + Date.now() + ".jpg";
+    const { error: upErr } = await supa.storage.from("photos").upload(path, capturedFile, { contentType: capturedFile.type || "image/jpeg" });
+    if(upErr){
+      console.error("Oncer evento: upload foto fallito —", upErr.message);
+    } else {
+      const { data: pub } = supa.storage.from("photos").getPublicUrl(path);
+      photoUrl = pub.publicUrl;
+    }
+
+    const caption = document.getElementById("input-caption").value.trim();
+    const now = new Date();
+    await supa.from("shared_pages").insert({
+      shared_book_id: bookInfo.id, user_id: userId,
+      photo: photoUrl, caption: caption || null,
+      day: dayOfYear(now), year: now.getFullYear(),
+    });
+
+    setBusy("btn-verify-otp", false, "", "Conferma e pubblica la foto");
+    showStep("step-done");
+  }catch(err){
+    setBusy("btn-verify-otp", false, "", "Conferma e pubblica la foto");
+    console.error("Oncer evento: pubblicazione fallita —", err.message);
+    alert("Codice non valido o errore nella pubblicazione. Riprova.");
+  }
+};
+
+document.getElementById("btn-add-another").onclick = () => {
+  capturedFile = null;
+  document.getElementById("photo-preview").style.display = "none";
+  document.getElementById("photo-label-text").textContent = "Tocca per scattare o scegliere una foto";
+  document.getElementById("input-caption").value = "";
+  document.getElementById("btn-continue-capture").disabled = true;
+  // Email/nome già confermati in questa sessione — si salta dritti alla
+  // pubblicazione della prossima foto, l'utente Supabase è già autenticato.
+  document.getElementById("form-capture").onsubmit = async (e) => {
+    e.preventDefault();
+    if(!capturedFile) return;
+    setBusy("btn-continue-capture", true, "Pubblico…", "Continua");
+    try{
+      const { data: { user } } = await supa.auth.getUser();
+      const path = user.id + "/" + Date.now() + ".jpg";
+      const { error: upErr } = await supa.storage.from("photos").upload(path, capturedFile, { contentType: capturedFile.type || "image/jpeg" });
+      let photoUrl = null;
+      if(!upErr){
+        const { data: pub } = supa.storage.from("photos").getPublicUrl(path);
+        photoUrl = pub.publicUrl;
+      }
+      const caption = document.getElementById("input-caption").value.trim();
+      const now = new Date();
+      await supa.from("shared_pages").insert({
+        shared_book_id: bookInfo.id, user_id: user.id,
+        photo: photoUrl, caption: caption || null,
+        day: dayOfYear(now), year: now.getFullYear(),
+      });
+      setBusy("btn-continue-capture", false, "", "Continua");
+      showStep("step-done");
+    }catch(err){
+      setBusy("btn-continue-capture", false, "", "Continua");
+      console.error("Oncer evento: pubblicazione foto aggiuntiva fallita —", err.message);
+      alert("Errore nella pubblicazione. Riprova.");
+    }
+  };
+  showStep("step-capture");
+};
+</script>
+</body>
+</html>
