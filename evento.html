@@ -81,7 +81,6 @@
 </style>
 </head>
 <body>
-
 <div class="hero">
   <svg class="mark" viewBox="0 0 100 154" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -97,15 +96,12 @@
   <h1 id="hero-title">Oncer</h1>
   <p id="hero-sub">Aggiungi la tua foto al libro di oggi</p>
 </div>
-
 <main>
   <div class="card">
-
     <div class="step active" id="step-loading">
       <p class="center muted">Un attimo, stiamo caricando il libro…</p>
       <pre id="debug-log" style="font-size:11px;color:#b09fc2;white-space:pre-wrap;margin-top:16px;background:#faf8f4;border-radius:10px;padding:10px;border:1px solid var(--line);"></pre>
     </div>
-
     <div class="step" id="step-error">
       <div class="center">
         <div class="emoji-big">🔖</div>
@@ -113,14 +109,12 @@
         <p class="muted">Questo QR code o link non porta a nessun libro attivo. Chiedi a chi ha organizzato l'evento di controllare il codice.</p>
       </div>
     </div>
-
     <div class="step" id="step-welcome">
       <h2 id="welcome-title">Aggiungi la tua foto</h2>
       <p class="muted">Hai già l'app Oncer sul telefono?</p>
       <button class="btn" id="btn-has-app">Sì, ho già l'app</button>
       <button class="btn-ghost" id="btn-no-app">No, è la prima volta</button>
     </div>
-
     <div class="step" id="step-has-app">
       <div class="center">
         <div class="emoji-big">📱</div>
@@ -128,7 +122,6 @@
         <p class="muted">Apri Oncer sul tuo telefono: troverai l'invito a questo libro tra le notifiche, oppure chiedi a chi ha organizzato l'evento di invitarti direttamente dall'app cercando il tuo username.</p>
       </div>
     </div>
-
     <div class="step" id="step-login">
       <h2>Entra per partecipare</h2>
       <div class="notice">Ti creiamo un accesso <strong>temporaneo</strong>, solo per questo libro — niente password, nessun impegno, nessuna registrazione vera e propria.</div>
@@ -141,7 +134,6 @@
         <button class="btn" type="submit" id="btn-continue-login">Invia il codice</button>
       </form>
     </div>
-
     <div class="step" id="step-otp">
       <h2>Controlla la tua email</h2>
       <p class="muted">Ti abbiamo mandato un codice a <strong id="otp-email-display"></strong>. Copialo qui sotto (non serve cliccare nessun link nell'email).</p>
@@ -152,7 +144,6 @@
       </form>
       <button class="link-btn" id="btn-resend-otp" type="button">Non ho ricevuto niente, rimanda il codice</button>
     </div>
-
     <div class="step" id="step-capture">
       <h2>Scatta la tua foto</h2>
       <p class="muted">Accesso confermato — ora puoi aggiungere la tua foto al libro.</p>
@@ -168,7 +159,6 @@
         <button class="btn" type="submit" id="btn-continue-capture" disabled>Pubblica la foto</button>
       </form>
     </div>
-
     <div class="step" id="step-done">
       <div class="center">
         <div class="emoji-big">🎉</div>
@@ -177,13 +167,11 @@
       </div>
       <button class="btn-ghost" id="btn-add-another">Aggiungi un'altra foto di oggi</button>
     </div>
-
   </div>
 </main>
-
 <footer>Oncer — questa pagina funziona senza scaricare l'app.</footer>
-
 <script>
+document.title = "SCRIPT PARTITO — " + Date.now();
 // Mostra qualsiasi errore JS direttamente nella schermata di caricamento,
 // senza bisogno di aprire i DevTools.
 window.addEventListener("error", function(e){
@@ -196,7 +184,6 @@ function oncerLog(msg){
   if(log) log.textContent += msg + "\n";
 }
 oncerLog("1) script avviato");
-
 // ── Configurazione ───────────────────────────────────────────────────────
 // Nessuna libreria esterna: si parla direttamente con le API REST di
 // Supabase via fetch(), per non dipendere da nessun CDN esterno (che su
@@ -206,17 +193,14 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const AUTH_URL = SUPABASE_URL + "/auth/v1";
 const REST_URL = SUPABASE_URL + "/rest/v1";
 const STORAGE_URL = SUPABASE_URL + "/storage/v1";
-
 const params = new URLSearchParams(location.search);
 const inviteCode = params.get("c");
-
 let bookInfo = null;
 let capturedFile = null;
 let pendingEmail = null;
 let guestName = null;
 let accessToken = null;
 let userId = null;
-
 function showStep(id){
   document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -237,7 +221,6 @@ function restHeaders(extra){
     "Content-Type": "application/json",
   }, extra || {});
 }
-
 async function init(){
   oncerLog("2) init() avviato, inviteCode=" + inviteCode);
   document.querySelector("#step-loading p").textContent = "Un attimo, stiamo caricando il libro… (codice: " + (inviteCode || "MANCANTE") + ")";
@@ -267,10 +250,8 @@ async function init(){
   }
 }
 init();
-
 document.getElementById("btn-has-app").onclick = () => showStep("step-has-app");
 document.getElementById("btn-no-app").onclick = () => showStep("step-login");
-
 // ── Step 1: login (nome + email → invio codice) ────────────────────────────
 async function sendOtp(){
   const res = await fetch(AUTH_URL + "/otp", {
@@ -284,7 +265,6 @@ async function sendOtp(){
   }
   return null;
 }
-
 document.getElementById("form-login").onsubmit = async (e) => {
   e.preventDefault();
   pendingEmail = document.getElementById("input-email").value.trim();
@@ -300,7 +280,6 @@ document.getElementById("form-login").onsubmit = async (e) => {
   document.getElementById("otp-email-display").textContent = pendingEmail;
   showStep("step-otp");
 };
-
 document.getElementById("btn-resend-otp").onclick = async () => {
   if(!pendingEmail) return;
   const btn = document.getElementById("btn-resend-otp");
@@ -313,7 +292,6 @@ document.getElementById("btn-resend-otp").onclick = async () => {
     alert("Non siamo riusciti a rimandare il codice. Riprova tra poco.");
   }
 };
-
 // ── Step 2: verifica codice → attiva account ospite + iscrizione al libro ─
 document.getElementById("form-otp").onsubmit = async (e) => {
   e.preventDefault();
@@ -329,7 +307,6 @@ document.getElementById("form-otp").onsubmit = async (e) => {
     if(!res.ok) throw new Error(data.error_description || data.msg || "Codice non valido o scaduto.");
     accessToken = data.access_token;
     userId = data.user.id;
-
     // Importante: NON creare/aggiornare il profilo incondizionatamente — se
     // questa email appartiene già a un account Oncer vero, non va toccato.
     // Si crea "guest" SOLO se il profilo non esiste ancora davvero.
@@ -345,4 +322,99 @@ document.getElementById("form-otp").onsubmit = async (e) => {
         body: JSON.stringify({ id: userId, username: guestName, account_type: "guest" }),
       });
     } else if(!existingProfile.username){
-      await fetch(REST_URL + 
+      await fetch(REST_URL + "/profiles?id=eq." + userId, {
+        method: "PATCH",
+        headers: restHeaders({ "Prefer": "return=minimal" }),
+        body: JSON.stringify({ username: guestName }),
+      });
+    }
+
+    // Iscrive l'ospite al libro condiviso dell'evento, se non è già membro.
+    if(bookInfo && bookInfo.id){
+      const memRes = await fetch(REST_URL + "/shared_book_members?shared_book_id=eq." + bookInfo.id + "&user_id=eq." + userId + "&select=id", {
+        headers: restHeaders(),
+      });
+      const memRows = await memRes.json();
+      if(!memRows || !memRows.length){
+        await fetch(REST_URL + "/shared_book_members", {
+          method: "POST",
+          headers: restHeaders({ "Prefer": "return=minimal" }),
+          body: JSON.stringify({ shared_book_id: bookInfo.id, user_id: userId, status: "accepted" }),
+        });
+      }
+    }
+
+    showStep("step-capture");
+  }catch(err){
+    alert(err.message || "Codice non valido o scaduto.");
+  }finally{
+    setBusy("btn-verify-otp", false, "", "Conferma");
+  }
+};
+
+// ── Step 3: scatto/scelta foto + pubblicazione ─────────────────────────────
+document.getElementById("photo-input").addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  capturedFile = file;
+  const preview = document.getElementById("photo-preview");
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+  document.getElementById("photo-label-text").textContent = "Foto scelta — tocca per cambiarla";
+  document.getElementById("btn-continue-capture").disabled = false;
+});
+
+document.getElementById("form-capture").onsubmit = async (e) => {
+  e.preventDefault();
+  if(!capturedFile || !bookInfo) return;
+  setBusy("btn-continue-capture", true, "Pubblicazione…", "Pubblica la foto");
+  try{
+    const ext = (capturedFile.name && capturedFile.name.includes(".")) ? capturedFile.name.split(".").pop() : "jpg";
+    const path = bookInfo.id + "/" + userId + "-" + Date.now() + "." + ext;
+    const upRes = await fetch(STORAGE_URL + "/object/shared-photos/" + path, {
+      method: "POST",
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + accessToken,
+        "Content-Type": capturedFile.type || "application/octet-stream",
+      },
+      body: capturedFile,
+    });
+    if(!upRes.ok) throw new Error("Caricamento foto non riuscito.");
+    const photoUrl = SUPABASE_URL + "/storage/v1/object/public/shared-photos/" + path;
+
+    const now = new Date();
+    const caption = document.getElementById("input-caption").value.trim();
+    await fetch(REST_URL + "/shared_book_pages", {
+      method: "POST",
+      headers: restHeaders({ "Prefer": "return=minimal" }),
+      body: JSON.stringify({
+        shared_book_id: bookInfo.id,
+        user_id: userId,
+        photo_url: photoUrl,
+        caption: caption || null,
+        day: dayOfYear(now),
+        year: now.getFullYear(),
+      }),
+    });
+
+    showStep("step-done");
+  }catch(err){
+    alert(err.message || "Errore durante la pubblicazione della foto.");
+  }finally{
+    setBusy("btn-continue-capture", false, "", "Pubblica la foto");
+  }
+};
+
+document.getElementById("btn-add-another").onclick = () => {
+  capturedFile = null;
+  document.getElementById("photo-preview").style.display = "none";
+  document.getElementById("photo-preview").src = "";
+  document.getElementById("photo-label-text").textContent = "Tocca per scattare o scegliere una foto";
+  document.getElementById("input-caption").value = "";
+  document.getElementById("btn-continue-capture").disabled = true;
+  showStep("step-capture");
+};
+</script>
+</body>
+</html>
