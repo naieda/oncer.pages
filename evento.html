@@ -103,6 +103,7 @@
 
     <div class="step active" id="step-loading">
       <p class="center muted">Un attimo, stiamo caricando il libro…</p>
+      <pre id="debug-log" style="font-size:11px;color:#b09fc2;white-space:pre-wrap;margin-top:16px;background:#faf8f4;border-radius:10px;padding:10px;border:1px solid var(--line);"></pre>
     </div>
 
     <div class="step" id="step-error">
@@ -189,18 +190,27 @@
 window.addEventListener("error", function(e){
   var p = document.querySelector("#step-loading p");
   if(p) p.textContent = "Errore: " + (e.message || (e.error && e.error.message) || "sconosciuto");
+  var log = document.getElementById("debug-log");
+  if(log) log.textContent += "ERRORE: " + (e.message || "sconosciuto") + "\n";
 });
+function oncerLog(msg){
+  var log = document.getElementById("debug-log");
+  if(log) log.textContent += msg + "\n";
+}
+oncerLog("1) primo script inline eseguito");
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── Configurazione ───────────────────────────────────────────────────────
 const SUPABASE_URL = "https://infqeqlrjbsoenpbgkgk.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluZnFlcWxyamJzb2VucGJna2drIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3NDE0MDgsImV4cCI6MjEwMDMxNzQwOH0.RRmE8CPsFHhI4XN6jCt2l2HCWSI-Vrz2wauy5mFmV5s";
+oncerLog("2) secondo script inline eseguito, supabase-js caricato: " + !!(window.supabase));
 if(!window.supabase || !window.supabase.createClient){
   document.querySelector("#step-loading p").textContent = "Errore: la libreria Supabase non si è caricata (window.supabase mancante).";
   throw new Error("supabase-js non caricato");
 }
 const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+oncerLog("3) client supabase creato");
 
 const params = new URLSearchParams(location.search);
 const inviteCode = params.get("c");
@@ -225,9 +235,11 @@ function dayOfYear(d){
 }
 
 async function init(){
+  oncerLog("4) init() avviato, inviteCode=" + inviteCode);
   document.querySelector("#step-loading p").textContent = "Un attimo, stiamo caricando il libro… (codice: " + (inviteCode || "MANCANTE") + ")";
   if(!inviteCode){ showStep("step-error"); return; }
   try{
+    oncerLog("5) chiamata fetch in corso…");
     const res = await fetch(SUPABASE_URL + "/functions/v1/get-event-book", {
       method: "POST",
       headers: {
@@ -237,18 +249,22 @@ async function init(){
       },
       body: JSON.stringify({ inviteCode }),
     });
+    oncerLog("6) risposta ricevuta, status=" + res.status);
     const data = await res.json();
+    oncerLog("7) json letto: " + JSON.stringify(data).slice(0,200));
     if(!res.ok || !data.book){ showStep("step-error"); return; }
     bookInfo = data.book;
     document.getElementById("hero-sub").textContent = bookInfo.title;
     document.getElementById("welcome-title").textContent = 'Aggiungi la tua foto a "' + bookInfo.title + '"';
     showStep("step-welcome");
   }catch(err){
+    oncerLog("ERRORE in init(): " + err.message);
     console.error("Oncer evento: caricamento libro fallito —", err.message);
     document.querySelector("#step-error p").textContent = "Errore tecnico: " + err.message;
     showStep("step-error");
   }
 }
+oncerLog("3.5) sto per chiamare init()");
 init();
 
 document.getElementById("btn-has-app").onclick = () => showStep("step-has-app");
@@ -318,26 +334,4 @@ document.getElementById("form-otp").onsubmit = async (e) => {
     setBusy("btn-verify-otp", false, "", "Conferma");
     showStep("step-capture");
   }catch(err){
-    setBusy("btn-verify-otp", false, "", "Conferma");
-    console.error("Oncer evento: verifica codice fallita —", err.message);
-    alert("Codice non valido o scaduto. Riprova.");
-  }
-};
-
-// ── Step 3: scatto e pubblicazione (usato sia la prima volta che per foto aggiuntive) ─
-document.getElementById("photo-input").onchange = (e) => {
-  const file = e.target.files[0];
-  if(!file) return;
-  capturedFile = file;
-  const url = URL.createObjectURL(file);
-  const img = document.getElementById("photo-preview");
-  img.src = url;
-  img.style.display = "block";
-  document.getElementById("photo-label-text").textContent = "Foto scelta — tocca per cambiarla";
-  document.getElementById("btn-continue-capture").disabled = false;
-};
-
-async function publishPhoto(){
-  const { data: { user } } = await supa.auth.getUser();
-  const path = user.id + "/" + Date.now() + ".jpg";
-  const { error: upErr } = await supa.storage.from("photos").upload(path, capturedFile, { contentType: capturedFile.ty
+    setBusy("btn-verify-otp", false, "", "Conferma
