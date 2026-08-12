@@ -388,13 +388,13 @@ document.getElementById("form-capture").onsubmit = async (e) => {
 
     const now = new Date();
     const caption = document.getElementById("input-caption").value.trim();
-    await fetch(REST_URL + "/shared_book_pages", {
+    await fetch(REST_URL + "/shared_pages", {
       method: "POST",
       headers: restHeaders({ "Prefer": "return=minimal" }),
       body: JSON.stringify({
         shared_book_id: bookInfo.id,
         user_id: userId,
-        photo_url: photoUrl,
+        photo: photoUrl,
         caption: caption || null,
         day: dayOfYear(now),
         year: now.getFullYear(),
