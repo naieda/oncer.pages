@@ -388,7 +388,7 @@ document.getElementById("form-capture").onsubmit = async (e) => {
 
     const now = new Date();
     const caption = document.getElementById("input-caption").value.trim();
-    await fetch(REST_URL + "/shared_pages", {
+    const pageRes = await fetch(REST_URL + "/shared_pages", {
       method: "POST",
       headers: restHeaders({ "Prefer": "return=minimal" }),
       body: JSON.stringify({
@@ -400,6 +400,10 @@ document.getElementById("form-capture").onsubmit = async (e) => {
         year: now.getFullYear(),
       }),
     });
+    if(!pageRes.ok){
+      const errText = await pageRes.text().catch(() => "");
+      throw new Error("Salvataggio pagina non riuscito (" + pageRes.status + "): " + errText);
+    }
 
     showStep("step-done");
   }catch(err){
