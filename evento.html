@@ -370,8 +370,8 @@ document.getElementById("form-capture").onsubmit = async (e) => {
   setBusy("btn-continue-capture", true, "Pubblicazione…", "Pubblica la foto");
   try{
     const ext = (capturedFile.name && capturedFile.name.includes(".")) ? capturedFile.name.split(".").pop() : "jpg";
-    const path = bookInfo.id + "/" + userId + "-" + Date.now() + "." + ext;
-    const upRes = await fetch(STORAGE_URL + "/object/shared-photos/" + path, {
+    const path = userId + "/event-" + bookInfo.id + "-" + Date.now() + "." + ext;
+    const upRes = await fetch(STORAGE_URL + "/object/photos/" + path, {
       method: "POST",
       headers: {
         "apikey": SUPABASE_ANON_KEY,
@@ -384,7 +384,7 @@ document.getElementById("form-capture").onsubmit = async (e) => {
       const errText = await upRes.text().catch(() => "");
       throw new Error("Caricamento foto non riuscito (" + upRes.status + "): " + errText);
     }
-    const photoUrl = SUPABASE_URL + "/storage/v1/object/public/shared-photos/" + path;
+    const photoUrl = SUPABASE_URL + "/storage/v1/object/public/photos/" + path;
 
     const now = new Date();
     const caption = document.getElementById("input-caption").value.trim();
