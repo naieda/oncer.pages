@@ -182,11 +182,24 @@
 
 <footer>Oncer — questa pagina funziona senza scaricare l'app.</footer>
 
+<script>
+// Mostra qualsiasi errore JS direttamente nella schermata di caricamento,
+// senza bisogno di aprire i DevTools — copre anche errori che avvengono
+// nello script esterno di supabase-js, prima che il nostro codice parta.
+window.addEventListener("error", function(e){
+  var p = document.querySelector("#step-loading p");
+  if(p) p.textContent = "Errore: " + (e.message || (e.error && e.error.message) || "sconosciuto");
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── Configurazione ───────────────────────────────────────────────────────
 const SUPABASE_URL = "https://infqeqlrjbsoenpbgkgk.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluZnFlcWxyamJzb2VucGJna2drIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3NDE0MDgsImV4cCI6MjEwMDMxNzQwOH0.RRmE8CPsFHhI4XN6jCt2l2HCWSI-Vrz2wauy5mFmV5s";
+if(!window.supabase || !window.supabase.createClient){
+  document.querySelector("#step-loading p").textContent = "Errore: la libreria Supabase non si è caricata (window.supabase mancante).";
+  throw new Error("supabase-js non caricato");
+}
 const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const params = new URLSearchParams(location.search);
@@ -212,6 +225,7 @@ function dayOfYear(d){
 }
 
 async function init(){
+  document.querySelector("#step-loading p").textContent = "Un attimo, stiamo caricando il libro… (codice: " + (inviteCode || "MANCANTE") + ")";
   if(!inviteCode){ showStep("step-error"); return; }
   try{
     const res = await fetch(SUPABASE_URL + "/functions/v1/get-event-book", {
@@ -231,6 +245,7 @@ async function init(){
     showStep("step-welcome");
   }catch(err){
     console.error("Oncer evento: caricamento libro fallito —", err.message);
+    document.querySelector("#step-error p").textContent = "Errore tecnico: " + err.message;
     showStep("step-error");
   }
 }
@@ -325,30 +340,4 @@ document.getElementById("photo-input").onchange = (e) => {
 async function publishPhoto(){
   const { data: { user } } = await supa.auth.getUser();
   const path = user.id + "/" + Date.now() + ".jpg";
-  const { error: upErr } = await supa.storage.from("photos").upload(path, capturedFile, { contentType: capturedFile.type || "image/jpeg" });
-  let photoUrl = null;
-  if(upErr){
-    console.error("Oncer evento: upload foto fallito —", upErr.message);
-  } else {
-    const { data: pub } = supa.storage.from("photos").getPublicUrl(path);
-    photoUrl = pub.publicUrl;
-  }
-  const caption = document.getElementById("input-caption").value.trim();
-  const now = new Date();
-  await supa.from("shared_pages").insert({
-    shared_book_id: bookInfo.id, user_id: user.id,
-    photo: photoUrl, caption: caption || null,
-    day: dayOfYear(now), year: now.getFullYear(),
-  });
-}
-
-document.getElementById("form-capture").onsubmit = async (e) => {
-  e.preventDefault();
-  if(!capturedFile) return;
-  setBusy("btn-continue-capture", true, "Pubblico…", "Pubblica la foto");
-  try{
-    await publishPhoto();
-    setBusy("btn-continue-capture", false, "", "Pubblica la foto");
-    showStep("step-done");
-  }catch(err){
-    setBusy("btn-continue-capture", 
+  const { error: upErr } = await supa.storage.from("photos").upload(path, capturedFile, { contentType: capturedFile.ty
