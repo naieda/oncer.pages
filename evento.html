@@ -185,32 +185,27 @@
 
 <script>
 // Mostra qualsiasi errore JS direttamente nella schermata di caricamento,
-// senza bisogno di aprire i DevTools — copre anche errori che avvengono
-// nello script esterno di supabase-js, prima che il nostro codice parta.
+// senza bisogno di aprire i DevTools.
 window.addEventListener("error", function(e){
   var p = document.querySelector("#step-loading p");
   if(p) p.textContent = "Errore: " + (e.message || (e.error && e.error.message) || "sconosciuto");
-  var log = document.getElementById("debug-log");
-  if(log) log.textContent += "ERRORE: " + (e.message || "sconosciuto") + "\n";
+  oncerLog("ERRORE: " + (e.message || "sconosciuto"));
 });
 function oncerLog(msg){
   var log = document.getElementById("debug-log");
   if(log) log.textContent += msg + "\n";
 }
-oncerLog("1) primo script inline eseguito");
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+oncerLog("1) script avviato");
+
 // ── Configurazione ───────────────────────────────────────────────────────
+// Nessuna libreria esterna: si parla direttamente con le API REST di
+// Supabase via fetch(), per non dipendere da nessun CDN esterno (che su
+// alcune reti può essere bloccato silenziosamente).
 const SUPABASE_URL = "https://infqeqlrjbsoenpbgkgk.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluZnFlcWxyamJzb2VucGJna2drIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3NDE0MDgsImV4cCI6MjEwMDMxNzQwOH0.RRmE8CPsFHhI4XN6jCt2l2HCWSI-Vrz2wauy5mFmV5s";
-oncerLog("2) secondo script inline eseguito, supabase-js caricato: " + !!(window.supabase));
-if(!window.supabase || !window.supabase.createClient){
-  document.querySelector("#step-loading p").textContent = "Errore: la libreria Supabase non si è caricata (window.supabase mancante).";
-  throw new Error("supabase-js non caricato");
-}
-const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-oncerLog("3) client supabase creato");
+const AUTH_URL = SUPABASE_URL + "/auth/v1";
+const REST_URL = SUPABASE_URL + "/rest/v1";
+const STORAGE_URL = SUPABASE_URL + "/storage/v1";
 
 const params = new URLSearchParams(location.search);
 const inviteCode = params.get("c");
@@ -219,6 +214,8 @@ let bookInfo = null;
 let capturedFile = null;
 let pendingEmail = null;
 let guestName = null;
+let accessToken = null;
+let userId = null;
 
 function showStep(id){
   document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
@@ -233,13 +230,20 @@ function dayOfYear(d){
   const start = new Date(d.getFullYear(), 0, 0);
   return Math.floor((d - start) / 86400000);
 }
+function restHeaders(extra){
+  return Object.assign({
+    "apikey": SUPABASE_ANON_KEY,
+    "Authorization": "Bearer " + accessToken,
+    "Content-Type": "application/json",
+  }, extra || {});
+}
 
 async function init(){
-  oncerLog("4) init() avviato, inviteCode=" + inviteCode);
+  oncerLog("2) init() avviato, inviteCode=" + inviteCode);
   document.querySelector("#step-loading p").textContent = "Un attimo, stiamo caricando il libro… (codice: " + (inviteCode || "MANCANTE") + ")";
   if(!inviteCode){ showStep("step-error"); return; }
   try{
-    oncerLog("5) chiamata fetch in corso…");
+    oncerLog("3) chiamata fetch in corso…");
     const res = await fetch(SUPABASE_URL + "/functions/v1/get-event-book", {
       method: "POST",
       headers: {
@@ -249,9 +253,8 @@ async function init(){
       },
       body: JSON.stringify({ inviteCode }),
     });
-    oncerLog("6) risposta ricevuta, status=" + res.status);
+    oncerLog("4) risposta ricevuta, status=" + res.status);
     const data = await res.json();
-    oncerLog("7) json letto: " + JSON.stringify(data).slice(0,200));
     if(!res.ok || !data.book){ showStep("step-error"); return; }
     bookInfo = data.book;
     document.getElementById("hero-sub").textContent = bookInfo.title;
@@ -259,12 +262,10 @@ async function init(){
     showStep("step-welcome");
   }catch(err){
     oncerLog("ERRORE in init(): " + err.message);
-    console.error("Oncer evento: caricamento libro fallito —", err.message);
     document.querySelector("#step-error p").textContent = "Errore tecnico: " + err.message;
     showStep("step-error");
   }
 }
-oncerLog("3.5) sto per chiamare init()");
 init();
 
 document.getElementById("btn-has-app").onclick = () => showStep("step-has-app");
@@ -272,8 +273,16 @@ document.getElementById("btn-no-app").onclick = () => showStep("step-login");
 
 // ── Step 1: login (nome + email → invio codice) ────────────────────────────
 async function sendOtp(){
-  const { error } = await supa.auth.signInWithOtp({ email: pendingEmail, options: { shouldCreateUser: true } });
-  return error;
+  const res = await fetch(AUTH_URL + "/otp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY },
+    body: JSON.stringify({ email: pendingEmail, create_user: true }),
+  });
+  if(!res.ok){
+    const err = await res.json().catch(() => ({}));
+    return err.error_description || err.msg || err.error || ("Errore invio codice (" + res.status + ")");
+  }
+  return null;
 }
 
 document.getElementById("form-login").onsubmit = async (e) => {
@@ -285,7 +294,6 @@ document.getElementById("form-login").onsubmit = async (e) => {
   const error = await sendOtp();
   setBusy("btn-continue-login", false, "", "Invia il codice");
   if(error){
-    console.error("Oncer evento: invio codice fallito —", error.message);
     alert("Non siamo riusciti a inviare il codice. Controlla l'email e riprova.");
     return;
   }
@@ -312,26 +320,29 @@ document.getElementById("form-otp").onsubmit = async (e) => {
   const token = document.getElementById("input-otp").value.trim();
   setBusy("btn-verify-otp", true, "Verifica in corso…", "Conferma");
   try{
-    const { data, error } = await supa.auth.verifyOtp({ email: pendingEmail, token, type: "email" });
-    if(error) throw error;
-    const userId = data.user.id;
-
-    // Importante: NON usare upsert con account_type="guest" incondizionato —
-    // se questa email appartiene già a un account Oncer vero, un upsert lo
-    // declasserebbe a "ospite". Si crea "guest" SOLO se il profilo non esiste
-    // ancora davvero.
-    const { data: existingProfile } = await supa.from("profiles").select("id, username").eq("id", userId).maybeSingle();
-    if(!existingProfile){
-      await supa.from("profiles").insert({ id: userId, username: guestName, account_type: "guest" });
-    } else if(!existingProfile.username){
-      await supa.from("profiles").update({ username: guestName }).eq("id", userId);
-    }
-
-    await supa.from("shared_book_members").insert({
-      shared_book_id: bookInfo.id, user_id: userId, status: "accepted",
+    const res = await fetch(AUTH_URL + "/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY },
+      body: JSON.stringify({ type: "email", email: pendingEmail, token }),
     });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error_description || data.msg || "Codice non valido o scaduto.");
+    accessToken = data.access_token;
+    userId = data.user.id;
 
-    setBusy("btn-verify-otp", false, "", "Conferma");
-    showStep("step-capture");
-  }catch(err){
-    setBusy("btn-verify-otp", false, "", "Conferma
+    // Importante: NON creare/aggiornare il profilo incondizionatamente — se
+    // questa email appartiene già a un account Oncer vero, non va toccato.
+    // Si crea "guest" SOLO se il profilo non esiste ancora davvero.
+    const profRes = await fetch(REST_URL + "/profiles?id=eq." + userId + "&select=id,username", {
+      headers: restHeaders(),
+    });
+    const profRows = await profRes.json();
+    const existingProfile = profRows && profRows[0];
+    if(!existingProfile){
+      await fetch(REST_URL + "/profiles", {
+        method: "POST",
+        headers: restHeaders({ "Prefer": "return=minimal" }),
+        body: JSON.stringify({ id: userId, username: guestName, account_type: "guest" }),
+      });
+    } else if(!existingProfile.username){
+      await fetch(REST_URL + 
