@@ -182,7 +182,7 @@
 
 <footer>Oncer — questa pagina funziona senza scaricare l'app.</footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ── Configurazione ───────────────────────────────────────────────────────
 const SUPABASE_URL = "https://infqeqlrjbsoenpbgkgk.supabase.co";
@@ -351,4 +351,4 @@ document.getElementById("form-capture").onsubmit = async (e) => {
     setBusy("btn-continue-capture", false, "", "Pubblica la foto");
     showStep("step-done");
   }catch(err){
-    setBusy("bt
+    setBusy("btn-continue-capture", 
