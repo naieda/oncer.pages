@@ -169,8 +169,8 @@
 // ── Configurazione ───────────────────────────────────────────────────────
 // Stessi valori usati in src/lib/supabase.js dentro l'app — da incollare
 // qui prima di pubblicare la pagina.
-const SUPABASE_URL = "https://infqeqlrjbsoenpbgkgk.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluZnFlcWxyamJzb2VucGJna2drIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3NDE0MDgsImV4cCI6MjEwMDMxNzQwOH0.RRmE8CPsFHhI4XN6jCt2l2HCWSI-Vrz2wauy5mFmV5s";
+const SUPABASE_URL = "https://TUO-PROGETTO.supabase.co";
+const SUPABASE_ANON_KEY = "TUA-ANON-KEY";
 const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const params = new URLSearchParams(location.search);
@@ -200,7 +200,11 @@ async function init(){
   try{
     const res = await fetch(SUPABASE_URL + "/functions/v1/get-event-book", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY },
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+      },
       body: JSON.stringify({ inviteCode }),
     });
     const data = await res.json();
