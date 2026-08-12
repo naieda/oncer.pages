@@ -274,7 +274,7 @@ document.getElementById("form-login").onsubmit = async (e) => {
   const error = await sendOtp();
   setBusy("btn-continue-login", false, "", "Invia il codice");
   if(error){
-    alert("Non siamo riusciti a inviare il codice. Controlla l'email e riprova.");
+    alert("Errore invio codice (diagnostica): " + error);
     return;
   }
   document.getElementById("otp-email-display").textContent = pendingEmail;
