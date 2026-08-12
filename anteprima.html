@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Il libro è pronto — Oncer</title>
+<style>
+  :root{
+    --grad-start:#FF2D6B;
+    --grad-end:#7B2FFF;
+    --cream:#FBF3E7;
+    --ink:#1a1420;
+    --muted:#6b6470;
+    --line:#ece3d6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.55;
+    min-height:100vh;
+  }
+  .hero{
+    background:linear-gradient(135deg,var(--grad-start),var(--grad-end));
+    padding:44px 24px 60px;
+    text-align:center;
+    color:var(--cream);
+  }
+  .mark{width:56px;height:auto;margin:0 auto 14px;display:block;}
+  .hero h1{font-size:1.5rem;font-weight:800;margin-bottom:6px;}
+  .hero p{opacity:.92;font-size:.95rem;max-width:400px;margin:0 auto;}
+  main{max-width:640px;margin:-32px auto 0;padding:0 18px 60px;}
+  .card{
+    background:#fff;border-radius:20px;padding:26px 22px;
+    box-shadow:0 20px 50px rgba(0,0,0,.12);
+    margin-bottom:18px;
+  }
+  .step{display:none;}
+  .step.active{display:block;}
+  h2{font-size:1.15rem;margin-bottom:10px;}
+  p{margin-bottom:14px;color:var(--ink);}
+  .muted{color:var(--muted);font-size:.9rem;}
+  .center{text-align:center;}
+  .emoji-big{font-size:2.6rem;margin-bottom:10px;}
+  .grid{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+  }
+  @media(min-width:520px){ .grid{grid-template-columns:repeat(3,1fr);} }
+  .page-card{
+    background:#faf8f4;border-radius:14px;overflow:hidden;border:1px solid var(--line);
+  }
+  .page-photo{
+    width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:linear-gradient(135deg,#FF2D6B22,#7B2FFF22);
+  }
+  .page-emoji{
+    width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;font-size:2.6rem;
+    background:linear-gradient(135deg,#FF2D6B22,#7B2FFF22);
+  }
+  .page-meta{padding:9px 11px;}
+  .page-day{font-size:9px;color:var(--grad-start);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;}
+  .page-caption{font-size:12px;color:var(--ink);line-height:1.4;}
+  label{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;margin-top:14px;}
+  input[type=email]{
+    width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);
+    font-size:1rem;font-family:inherit;background:#faf8f4;
+  }
+  input:focus{outline:2px solid var(--grad-end);}
+  .toggle-row{
+    display:flex;align-items:center;gap:12px;cursor:pointer;padding:13px 14px;
+    background:#faf8f4;border-radius:12px;border:1px solid var(--line);
+  }
+  .toggle-switch{
+    width:44px;height:26px;border-radius:20px;background:var(--line);position:relative;flex-shrink:0;transition:background .2s;
+  }
+  .toggle-switch.on{background:linear-gradient(135deg,var(--grad-start),var(--grad-end));}
+  .toggle-knob{
+    width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .2s;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);
+  }
+  .toggle-switch.on .toggle-knob{left:21px;}
+  .btn{
+    display:block;width:100%;text-align:center;
+    background:linear-gradient(135deg,var(--grad-start),var(--grad-end));
+    color:#fff;border:none;font-weight:700;font-size:1rem;
+    padding:15px 20px;border-radius:999px;margin-top:16px;cursor:pointer;
+  }
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .upsell{
+    background:linear-gradient(135deg,#FF2D6B,#7B2FFF);border-radius:18px;padding:26px 22px;text-align:center;color:#fff;
+  }
+  .upsell h2{color:#fff;}
+  .upsell .muted{color:rgba(255,255,255,.85);}
+  .upsell .btn{background:#fff;color:var(--grad-start);}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;padding:24px 20px;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <svg class="mark" viewBox="0 0 100 154" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF2D6B"/>
+        <stop offset="100%" stop-color="#7B2FFF"/>
+      </linearGradient>
+    </defs>
+    <path d="M12 0h76a12 12 0 0 1 12 12v130L50 110 0 142V12A12 12 0 0 1 12 0z" fill="#FBF3E7"/>
+    <circle cx="50" cy="53" r="29" fill="url(#g)"/>
+    <circle cx="50" cy="53" r="15" fill="#FBF3E7"/>
+  </svg>
+  <h1 id="hero-title">Oncer</h1>
+  <p id="hero-sub">Il vostro libro è pronto</p>
+</div>
+
+<main>
+
+  <div class="card step active" id="step-loading">
+    <p class="center muted">Un attimo, stiamo caricando il libro…</p>
+  </div>
+
+  <div class="card step" id="step-error">
+    <div class="center">
+      <div class="emoji-big">🔖</div>
+      <h2>Non ancora pronto</h2>
+      <p class="muted" id="error-text">Questo libro non è ancora stato chiuso, oppure il link non è valido. Se l'evento è appena finito, riprova tra qualche minuto.</p>
+    </div>
+  </div>
+
+  <div class="step" id="step-ready">
+    <div class="card">
+      <h2 id="book-title">Il libro</h2>
+      <div class="grid" id="pages-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="toggle-row" id="print-toggle-row">
+        <div class="toggle-switch" id="print-toggle"><div class="toggle-knob"></div></div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:13.5px;">Vorrei anche una copia stampata</div>
+          <div class="muted" style="font-size:11.5px;">Lasciaci la tua email, ti contattiamo noi per i dettagli.</div>
+        </div>
+      </div>
+      <div id="print-email-wrap" style="display:none;">
+        <label for="print-email">La tua email</label>
+        <input type="email" id="print-email" placeholder="nome@esempio.com">
+        <button class="btn" id="btn-print-request">Richiedi la copia stampata</button>
+      </div>
+      <p id="print-confirmed" class="muted" style="display:none;margin-top:14px;">✅ Richiesta inviata — ti scriveremo noi per i dettagli.</p>
+    </div>
+
+    <div class="upsell">
+      <div style="font-size:2rem;margin-bottom:8px;">📖</div>
+      <h2>Ti è piaciuto?</h2>
+      <p class="muted">Con Oncer puoi scrivere una pagina al giorno anche per la tua vita di tutti i giorni — non solo per le occasioni speciali.</p>
+      <a class="btn" href="https://oncer.app" style="text-decoration:none;display:block;">Scopri Oncer</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>Oncer — questa pagina funziona senza scaricare l'app.</footer>
+
+<script>
+const SUPABASE_URL = "https://infqeqlrjbsoenpbgkgk.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluZnFlcWxyamJzb2VucGJna2drIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3NDE0MDgsImV4cCI6MjEwMDMxNzQwOH0.RRmE8CPsFHhI4XN6jCt2l2HCWSI-Vrz2wauy5mFmV5s";
+
+const params = new URLSearchParams(location.search);
+const inviteCode = params.get("c");
+
+function showStep(id){
+  document.querySelectorAll(".step").forEach(el => el.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function escapeHtml(s){
+  const d = document.createElement("div");
+  d.textContent = s || "";
+  return d.innerHTML;
+}
+
+async function init(){
+  if(!inviteCode){ showStep("step-error"); return; }
+  try{
+    const res = await fetch(SUPABASE_URL + "/functions/v1/get-event-preview", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ inviteCode }),
+    });
+    const data = await res.json();
+    if(res.status === 409){
+      document.getElementById("error-text").textContent = "Il libro non è ancora stato chiuso da chi ha organizzato l'evento. Riprova più tardi.";
+      showStep("step-error");
+      return;
+    }
+    if(!res.ok || !data.book){ showStep("step-error"); return; }
+
+    document.getElementById("hero-sub").textContent = data.book.title;
+    document.getElementById("book-title").textContent = data.book.title;
+
+    const grid = document.getElementById("pages-grid");
+    grid.innerHTML = "";
+    (data.pages || []).forEach(p => {
+      const card = document.createElement("div");
+      card.className = "page-card";
+      const isPhoto = p.photo && (p.photo.startsWith("http") || p.photo.startsWith("data:"));
+      card.innerHTML =
+        (isPhoto
+          ? '<img class="page-photo" src="' + escapeHtml(p.photo) + '" loading="lazy">'
+          : '<div class="page-emoji">' + escapeHtml(p.photo || "📷") + '</div>') +
+        '<div class="page-meta">' +
+          '<div class="page-day">Giorno ' + p.day + '</div>' +
+          (p.caption ? '<div class="page-caption">' + escapeHtml(p.caption) + '</div>' : '') +
+        '</div>';
+      grid.appendChild(card);
+    });
+
+    showStep("step-ready");
+  }catch(err){
+    console.error("Oncer: caricamento anteprima fallito —", err.message);
+    showStep("step-error");
+  }
+}
+init();
+
+document.getElementById("print-toggle-row").onclick = () => {
+  const toggle = document.getElementById("print-toggle");
+  const wrap = document.getElementById("print-email-wrap");
+  const on = toggle.classList.toggle("on");
+  wrap.style.display = on ? "block" : "none";
+};
+
+document.getElementById("btn-print-request").onclick = async () => {
+  const email = document.getElementById("print-email").value.trim();
+  if(!email) return;
+  const btn = document.getElementById("btn-print-request");
+  btn.disabled = true;
+  btn.textContent = "Invio…";
+  try{
+    const res = await fetch(SUPABASE_URL + "/functions/v1/request-print", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+      },
+      body: JSON.stringify({ inviteCode, email }),
+    });
+    if(!res.ok) throw new Error("richiesta fallita");
+    document.getElementById("print-email-wrap").style.display = "none";
+    document.getElementById("print-toggle-row").style.display = "none";
+    document.getElementById("print-confirmed").style.display = "block";
+  }catch(err){
+    btn.disabled = false;
+    btn.textContent = "Richiedi la copia stampata";
+    alert("Non siamo riusciti a inviare la richiesta. Riprova.");
+  }
+};
+</script>
+</body>
+</html>
