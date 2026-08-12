@@ -380,7 +380,10 @@ document.getElementById("form-capture").onsubmit = async (e) => {
       },
       body: capturedFile,
     });
-    if(!upRes.ok) throw new Error("Caricamento foto non riuscito.");
+    if(!upRes.ok){
+      const errText = await upRes.text().catch(() => "");
+      throw new Error("Caricamento foto non riuscito (" + upRes.status + "): " + errText);
+    }
     const photoUrl = SUPABASE_URL + "/storage/v1/object/public/shared-photos/" + path;
 
     const now = new Date();
