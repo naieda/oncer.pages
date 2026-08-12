@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informativa sulla privacy — Oncer</title>
+<style>
+  :root{
+    --grad-start:#FF2D6B;
+    --grad-end:#7B2FFF;
+    --cream:#FBF3E7;
+    --ink:#1a1420;
+    --muted:#6b6470;
+    --line:#ece3d6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.6;
+  }
+  .hero{
+    background:linear-gradient(135deg,var(--grad-start),var(--grad-end));
+    padding:56px 24px 72px;
+    text-align:center;
+    color:var(--cream);
+  }
+  .mark{width:72px;height:auto;margin:0 auto 20px;display:block;}
+  .hero h1{font-size:1.9rem;font-weight:800;margin-bottom:8px;}
+  .hero p{opacity:.92;font-size:1.05rem;max-width:480px;margin:0 auto;}
+  main{
+    max-width:680px;margin:-40px auto 0;padding:0 20px 60px;
+  }
+  .card{
+    background:#fff;border-radius:20px;padding:32px 28px;
+    box-shadow:0 20px 50px rgba(0,0,0,.12);
+    margin-bottom:24px;
+  }
+  h2{font-size:1.2rem;margin-bottom:14px;color:var(--ink);margin-top:26px;}
+  h2:first-child{margin-top:0;}
+  p{margin-bottom:14px;color:var(--ink);}
+  .muted{color:var(--muted);font-size:.95rem;}
+  ol,ul{margin:0 0 14px 22px;}
+  li{margin-bottom:8px;}
+  .badge{
+    display:inline-block;background:var(--cream);border:1px solid var(--line);
+    border-radius:999px;padding:4px 12px;font-size:.85rem;color:var(--muted);
+    margin-bottom:14px;
+  }
+  .updated{font-size:.82rem;color:var(--muted);margin-bottom:20px;}
+  footer{
+    text-align:center;color:var(--muted);font-size:.85rem;padding:20px;
+  }
+  .lang-divider{
+    text-align:center;margin:48px 0 24px;color:var(--muted);
+    font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;
+  }
+  .lang-divider::before,.lang-divider::after{
+    content:"";display:inline-block;width:40px;height:1px;background:var(--line);
+    vertical-align:middle;margin:0 12px;
+  }
+  a{color:var(--grad-start);}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <svg class="mark" viewBox="0 0 100 154" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF2D6B"/>
+        <stop offset="100%" stop-color="#7B2FFF"/>
+      </linearGradient>
+    </defs>
+    <path d="M12 0h76a12 12 0 0 1 12 12v130L50 110 0 142V12A12 12 0 0 1 12 0z" fill="#FBF3E7"/>
+    <circle cx="50" cy="53" r="29" fill="url(#g)"/>
+    <circle cx="50" cy="53" r="15" fill="#FBF3E7"/>
+  </svg>
+  <h1>Oncer</h1>
+  <p>Informativa sulla privacy</p>
+</div>
+
+<main>
+
+  <div class="card">
+    <span class="badge">Italiano</span>
+    <div class="updated">Ultimo aggiornamento: 12 agosto 2026</div>
+
+    <h2>Chi tratta i tuoi dati</h2>
+    <p>Il titolare del trattamento è <strong>Matteo Deiana</strong>, Via Bruino 33, Piossasco (TO), 10045, Italia. Per qualsiasi domanda su questa informativa o sui tuoi dati puoi scrivere a <strong><a href="mailto:hello@oncer.app">hello@oncer.app</a></strong>.</p>
+
+    <h2>Che dati raccogliamo</h2>
+    <ul>
+      <li><strong>Email</strong> — per creare e far accedere al tuo account, e per mandarti comunicazioni relative al servizio (es. codice di accesso, notifica quando un libro condiviso viene chiuso)</li>
+      <li><strong>Nome o username</strong> — per identificarti nell'app e verso le altre persone con cui condividi un libro</li>
+      <li><strong>Foto</strong> — quelle che scegli di caricare per le pagine del tuo diario</li>
+      <li><strong>Testi</strong> — didascalie delle foto e messaggi che scrivi nella funzione Notebook</li>
+      <li><strong>Identificativo del dispositivo</strong> — solo se attivi le notifiche push, per poterle recapitare</li>
+    </ul>
+
+    <h2>Perché li raccogliamo</h2>
+    <p>Usiamo questi dati esclusivamente per far funzionare Oncer: creare e gestire il tuo account, farti accedere, mostrarti le tue pagine e quelle dei libri condivisi a cui partecipi, mandarti le comunicazioni necessarie per usare il servizio (es. il codice di accesso via email), e per la sicurezza dell'account (impedire che qualcun altro acceda ai tuoi dati).</p>
+    <p class="muted">Non usiamo i tuoi dati per pubblicità, non li vendiamo, e non li usiamo per scopi diversi da quelli descritti qui.</p>
+
+    <h2>Con chi condividiamo i dati</h2>
+    <p>Ci appoggiamo a due fornitori di servizi che trattano i dati per nostro conto, secondo le nostre istruzioni, e non li usano per scopi propri:</p>
+    <ul>
+      <li><strong>Supabase</strong> — ospita il database, l'autenticazione e l'archiviazione delle foto</li>
+      <li><strong>Resend</strong> — invia le email per conto nostro (codici di accesso, notifiche)</li>
+    </ul>
+    <p>Se partecipi a un libro condiviso (family, evento, o a tempo), le persone che ne fanno parte vedono il tuo nome/username e le foto che scegli di aggiungere a quel libro — è una condivisione volontaria tra utenti, non con aziende terze.</p>
+    <p class="muted">Alcuni di questi fornitori possono trattare dati anche al di fuori dell'Unione Europea; in questo caso ci assicuriamo che siano in vigore garanzie adeguate previste dalla normativa (come le clausole contrattuali standard della Commissione Europea).</p>
+
+    <h2>Per quanto tempo conserviamo i tuoi dati</h2>
+    <p>Conserviamo i tuoi dati finché il tuo account resta attivo. Puoi chiedere la cancellazione del tuo account e dei tuoi dati in qualsiasi momento, gratuitamente — trovi tutte le istruzioni nella nostra <a href="https://privacy.oncer.app/elimina-account.html">pagina dedicata alla cancellazione dell'account</a>. Alcuni dati minimi possono essere trattenuti oltre la cancellazione solo quando richiesto dalla legge o per la sicurezza della piattaforma (i dettagli sono spiegati nella pagina di cancellazione).</p>
+
+    <h2>I tuoi diritti</h2>
+    <p>In base al Regolamento Generale sulla Protezione dei Dati (GDPR), hai diritto di: accedere ai tuoi dati, chiederne la correzione, chiederne la cancellazione, ottenerne una copia in formato portabile, e opporti al trattamento in certi casi. Puoi esercitare questi diritti scrivendo a <a href="mailto:hello@oncer.app">hello@oncer.app</a>. Hai anche diritto di presentare un reclamo al Garante per la protezione dei dati personali (www.garanteprivacy.it) se ritieni che i tuoi dati non siano trattati correttamente.</p>
+
+    <h2>Sicurezza</h2>
+    <p>Tutte le comunicazioni tra l'app e i nostri server avvengono in modo criptato (HTTPS/TLS). L'accesso ai dati è protetto da regole a livello di database che permettono a ogni persona di vedere e modificare solo i propri dati, o quelli dei libri condivisi a cui partecipa.</p>
+
+    <h2>Minori</h2>
+    <p>Oncer è pensata per un pubblico adulto (18 anni o più) e non è rivolta a minori.</p>
+
+    <h2>Cookie e tracciamento</h2>
+    <p>L'app e le pagine web collegate (come questa) non usano cookie pubblicitari o di tracciamento di terze parti.</p>
+
+    <h2>Modifiche a questa informativa</h2>
+    <p class="muted">Possiamo aggiornare questa informativa nel tempo, ad esempio quando aggiungiamo nuove funzionalità. La data in cima alla pagina indica l'ultimo aggiornamento.</p>
+  </div>
+
+  <div class="lang-divider">English</div>
+
+  <div class="card">
+    <span class="badge">English</span>
+    <div class="updated">Last updated: August 12, 2026</div>
+
+    <h2>Who processes your data</h2>
+    <p>The data controller is <strong>Matteo Deiana</strong>, Via Bruino 33, Piossasco (TO), 10045, Italy. For any question about this policy or your data, write to <strong><a href="mailto:hello@oncer.app">hello@oncer.app</a></strong>.</p>
+
+    <h2>What data we collect</h2>
+    <ul>
+      <li><strong>Email address</strong> — to create and let you access your account, and to send service-related communications (e.g. access code, notification when a shared book is closed)</li>
+      <li><strong>Name or username</strong> — to identify you in the app and to the other people you share a book with</li>
+      <li><strong>Photos</strong> — the ones you choose to upload for your diary pages</li>
+      <li><strong>Text</strong> — photo captions and messages you write in the Notebook feature</li>
+      <li><strong>Device identifier</strong> — only if you enable push notifications, to deliver them</li>
+    </ul>
+
+    <h2>Why we collect it</h2>
+    <p>We use this data solely to make Oncer work: creating and managing your account, logging you in, showing you your pages and the shared books you take part in, sending you the communications needed to use the service (e.g. the access code by email), and for account security (preventing anyone else from accessing your data).</p>
+    <p class="muted">We do not use your data for advertising, we do not sell it, and we do not use it for purposes other than the ones described here.</p>
+
+    <h2>Who we share data with</h2>
+    <p>We rely on two service providers that process data on our behalf, under our instructions, and don't use it for their own purposes:</p>
+    <ul>
+      <li><strong>Supabase</strong> — hosts our database, authentication, and photo storage</li>
+      <li><strong>Resend</strong> — sends emails on our behalf (access codes, notifications)</li>
+    </ul>
+    <p>If you take part in a shared book (family, event, or timed), the people in that book see your name/username and the photos you choose to add to it — this is voluntary sharing between users, not with third-party companies.</p>
+    <p class="muted">Some of these providers may process data outside the European Union; in that case we make sure appropriate safeguards required by law are in place (such as the European Commission's Standard Contractual Clauses).</p>
+
+    <h2>How long we keep your data</h2>
+    <p>We keep your data for as long as your account stays active. You can request deletion of your account and your data at any time, free of charge — full instructions are on our <a href="https://privacy.oncer.app/elimina-account.html">dedicated account deletion page</a>. Some minimal data may be retained beyond deletion only when required by law or for platform safety (details are explained on the deletion page).</p>
+
+    <h2>Your rights</h2>
+    <p>Under the General Data Protection Regulation (GDPR), you have the right to: access your data, request its correction, request its deletion, obtain a portable copy of it, and object to processing in certain cases. You can exercise these rights by writing to <a href="mailto:hello@oncer.app">hello@oncer.app</a>. You also have the right to lodge a complaint with your local data protection authority if you believe your data isn't being handled correctly.</p>
+
+    <h2>Security</h2>
+    <p>All communication between the app and our servers is encrypted (HTTPS/TLS). Access to data is protected by database-level rules that let each person see and modify only their own data, or that of the shared books they take part in.</p>
+
+    <h2>Minors</h2>
+    <p>Oncer is intended for an adult audience (18 years or older) and is not directed at minors.</p>
+
+    <h2>Cookies and tracking</h2>
+    <p>The app and its connected web pages (like this one) do not use advertising or third-party tracking cookies.</p>
+
+    <h2>Changes to this policy</h2>
+    <p class="muted">We may update this policy over time, for example when we add new features. The date at the top of the page shows the last update.</p>
+  </div>
+
+</main>
+
+<footer>
+  Oncer — questa pagina è pubblicamente accessibile senza necessità di accesso all'app.<br>
+  This page is publicly accessible without needing to log in to the app.
+</footer>
+
+</body>
+</html>
