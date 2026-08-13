@@ -415,6 +415,7 @@ document.getElementById("form-capture").onsubmit = async (e) => {
 
 document.getElementById("btn-add-another").onclick = () => {
   capturedFile = null;
+  document.getElementById("photo-input").value = "";
   document.getElementById("photo-preview").style.display = "none";
   document.getElementById("photo-preview").src = "";
   document.getElementById("photo-label-text").textContent = "Tocca per scattare o scegliere una foto";
